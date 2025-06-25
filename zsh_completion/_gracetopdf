@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+#compdef gracetopdf xmgracetopdf
+
+# Zsh completion for gracetopdf and xmgracetopdf
+# This file provides command-line autocompletion for the gracetopdf script in zsh
+
+_gracetopdf() {
+    _arguments -C \
+        '(-h --help)'{-h,--help}'[Show help message]' \
+        '(-v --verbose)'{-v,--verbose}'[Enable verbose output]' \
+        '(-d --dpi)'{-d,--dpi}'[Set output DPI]:DPI:(72 96 150 200 300 600 1200)' \
+        '--version[Show version information]' \
+        '1:input file:_files -g "*.agr"' \
+        '2:output file:_files -g "*.pdf"' && return 0
+
+    return 1
+}
+
+_gracetopdf "$@"

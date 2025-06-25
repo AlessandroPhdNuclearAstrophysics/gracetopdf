@@ -1,0 +1,102 @@
+.TH GRACETOPDF 1 "June 2025" "gracetopdf 1.0.0" "User Commands"
+.SH NAME
+gracetopdf, xmgracetopdf \- convert Grace plot files to PDF format
+.SH SYNOPSIS
+.B gracetopdf
+[\fIOPTIONS\fR] \fIINPUT_FILE\fR [\fIOUTPUT_FILE\fR]
+.br
+.B xmgracetopdf
+[\fIOPTIONS\fR] \fIINPUT_FILE\fR [\fIOUTPUT_FILE\fR]
+.SH DESCRIPTION
+.B gracetopdf
+(also available as
+.BR xmgracetopdf )
+is a command-line utility that converts Grace plot files (.agr) to PDF format.
+Grace (xmgrace) is a WYSIWYG 2D plotting tool for the X Window System and M*tif.
+This utility provides a simple way to convert Grace files to PDF for publication
+or sharing purposes.
+
+The conversion process uses Grace's batch mode to generate PostScript output,
+which is then converted to PDF using Ghostscript. This ensures high-quality
+output suitable for professional documents.
+.SH ARGUMENTS
+.TP
+.I INPUT_FILE
+The input Grace file (.agr format) to be converted. This file must exist
+and be readable.
+.TP
+.I OUTPUT_FILE
+The output PDF file name. If not specified, defaults to the input filename
+with a .pdf extension.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Display help message and exit.
+.TP
+.BR \-v ", " \-\-verbose
+Enable verbose output. Shows detailed information about the conversion process.
+.TP
+.BR \-d ", " \-\-dpi " " \fIDPI\fR
+Set the output resolution in dots per inch. Default is 300 DPI.
+Higher values produce better quality but larger files.
+.TP
+.BR \-\-version
+Display version information and exit.
+.SH EXAMPLES
+.TP
+Convert a Grace file to PDF with default settings:
+.B gracetopdf plot.agr
+.TP
+Convert with a specific output filename:
+.B gracetopdf plot.agr output.pdf
+.TP
+Convert with high resolution and verbose output:
+.B gracetopdf --dpi 600 --verbose plot.agr
+.SH EXIT STATUS
+.TP
+.B 0
+Successful completion.
+.TP
+.B 1
+An error occurred during execution. This could be due to:
+.RS
+.IP \(bu 2
+Missing input file
+.IP \(bu 2
+Missing dependencies (grace or ghostscript)
+.IP \(bu 2
+Conversion failure
+.IP \(bu 2
+Invalid command-line arguments
+.RE
+.SH DEPENDENCIES
+.B gracetopdf
+requires the following external programs to be installed:
+.TP
+.B grace (xmgrace)
+The Grace plotting tool, specifically the \fBgracebat\fR command for batch processing.
+.TP
+.B ghostscript
+For converting PostScript to PDF format. The \fBps2pdf\fR command must be available.
+.SH FILES
+.TP
+.I /tmp/gracetopdf_*.ps
+Temporary PostScript files created during conversion. These are automatically
+cleaned up after successful conversion.
+.SH BUGS
+Report bugs to the project repository or maintainer.
+.SH AUTHOR
+Written by Alessandro Grassi.
+.SH COPYRIGHT
+Copyright \(co 2025. License MIT: <https://opensource.org/licenses/MIT>.
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+.SH SEE ALSO
+.BR grace (1),
+.BR xmgrace (1),
+.BR gracebat (1),
+.BR ps2pdf (1),
+.BR ghostscript (1)
+
+Grace home page: <http://plasma-gate.weizmann.ac.il/Grace/>

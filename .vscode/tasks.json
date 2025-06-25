@@ -1,0 +1,68 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Check and Test Script",
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"check",
+				"&&",
+				"make",
+				"test"
+			],
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Install User",
+			"type": "shell",
+			"command": "make",
+			"args": ["install-user"],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Check Dependencies",
+			"type": "shell",
+			"command": "make",
+			"args": ["check-deps"],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run Sample Conversion",
+			"type": "shell",
+			"command": "./gracetopdf",
+			"args": ["--verbose", "sample.agr"],
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [],
+			"dependsOn": "Check and Test Script"
+		}
+	]
+}

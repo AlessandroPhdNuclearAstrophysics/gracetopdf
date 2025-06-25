@@ -1,0 +1,180 @@
+#!/bin/bash
+
+# gracetopdf - Convert Grace plot files to PDF format
+# Version: 1.0.0
+# Author: Alessandro Grassi
+# License: MIT
+
+set -euo pipefail
+
+# Script configuration
+SCRIPT_NAME="gracetopdf"
+VERSION="1.0.0"
+
+# Default values
+INPUT_FILE=""
+OUTPUT_FILE=""
+VERBOSE=false
+DPI=300
+
+# Function to display help
+show_help() {
+    cat << EOF
+Usage: $SCRIPT_NAME [OPTIONS] INPUT_FILE [OUTPUT_FILE]
+
+Convert Grace plot files (.agr) to PDF format.
+
+ARGUMENTS:
+    INPUT_FILE      Input Grace file (.agr)
+    OUTPUT_FILE     Output PDF file (optional, defaults to INPUT_FILE.pdf)
+
+OPTIONS:
+    -h, --help      Show this help message and exit
+    -v, --verbose   Enable verbose output
+    -d, --dpi DPI   Set output DPI (default: 300)
+    --version       Show version information
+
+EXAMPLES:
+    $SCRIPT_NAME plot.agr
+    $SCRIPT_NAME plot.agr output.pdf
+    $SCRIPT_NAME --dpi 600 --verbose plot.agr
+
+DEPENDENCIES:
+    - grace (xmgrace)
+    - ghostscript (for PDF conversion)
+
+EOF
+}
+
+# Function to display version
+show_version() {
+    echo "$SCRIPT_NAME version $VERSION"
+}
+
+# Function for verbose logging
+log() {
+    if [ "$VERBOSE" = true ]; then
+        echo "[INFO] $*" >&2
+    fi
+}
+
+# Function to check dependencies
+check_dependencies() {
+    local missing_deps=()
+    
+    if ! command -v gracebat >/dev/null 2>&1; then
+        missing_deps+=("grace (xmgrace)")
+    fi
+    
+    if ! command -v ps2pdf >/dev/null 2>&1; then
+        missing_deps+=("ghostscript")
+    fi
+    
+    if [ ${#missing_deps[@]} -gt 0 ]; then
+        echo "Error: Missing required dependencies:" >&2
+        printf "  - %s\n" "${missing_deps[@]}" >&2
+        echo "" >&2
+        echo "Please install the missing dependencies and try again." >&2
+        exit 1
+    fi
+}
+
+# Function to convert Grace file to PDF
+convert_grace_to_pdf() {
+    local input="$1"
+    local output="$2"
+    local temp_ps="/tmp/gracetopdf_$$.ps"
+    
+    log "Converting $input to PostScript..."
+    if ! gracebat -hdevice PostScript -printfile "$temp_ps" "$input" >/dev/null 2>&1; then
+        echo "Error: Failed to convert Grace file to PostScript" >&2
+        rm -f "$temp_ps"
+        exit 1
+    fi
+    
+    log "Converting PostScript to PDF..."
+    if ! ps2pdf -dPDFSETTINGS=/printer -r"$DPI" "$temp_ps" "$output" >/dev/null 2>&1; then
+        echo "Error: Failed to convert PostScript to PDF" >&2
+        rm -f "$temp_ps"
+        exit 1
+    fi
+    
+    # Clean up temporary file
+    rm -f "$temp_ps"
+    
+    log "Conversion completed: $output"
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        --version)
+            show_version
+            exit 0
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -d|--dpi)
+            if [[ -n "${2:-}" ]] && [[ "$2" =~ ^[0-9]+$ ]]; then
+                DPI="$2"
+                shift 2
+            else
+                echo "Error: --dpi requires a numeric argument" >&2
+                exit 1
+            fi
+            ;;
+        -*)
+            echo "Error: Unknown option $1" >&2
+            echo "Use --help for usage information." >&2
+            exit 1
+            ;;
+        *)
+            if [ -z "$INPUT_FILE" ]; then
+                INPUT_FILE="$1"
+            elif [ -z "$OUTPUT_FILE" ]; then
+                OUTPUT_FILE="$1"
+            else
+                echo "Error: Too many arguments" >&2
+                echo "Use --help for usage information." >&2
+                exit 1
+            fi
+            shift
+            ;;
+    esac
+done
+
+# Validate input
+if [ -z "$INPUT_FILE" ]; then
+    echo "Error: No input file specified" >&2
+    echo "Use --help for usage information." >&2
+    exit 1
+fi
+
+if [ ! -f "$INPUT_FILE" ]; then
+    echo "Error: Input file '$INPUT_FILE' does not exist" >&2
+    exit 1
+fi
+
+# Set default output file if not specified
+if [ -z "$OUTPUT_FILE" ]; then
+    OUTPUT_FILE="${INPUT_FILE%.*}.pdf"
+fi
+
+# Check dependencies
+check_dependencies
+
+# Perform conversion
+log "Starting conversion process..."
+log "Input file: $INPUT_FILE"
+log "Output file: $OUTPUT_FILE"
+log "DPI: $DPI"
+
+convert_grace_to_pdf "$INPUT_FILE" "$OUTPUT_FILE"
+
+echo "Successfully converted '$INPUT_FILE' to '$OUTPUT_FILE'"

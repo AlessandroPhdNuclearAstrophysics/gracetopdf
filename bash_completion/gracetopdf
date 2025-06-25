@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# Bash completion for gracetopdf
+# This file provides command-line autocompletion for the gracetopdf script
+
+_gracetopdf_completion() {
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    
+    # Available options
+    opts="--help --verbose --dpi --version -h -v -d"
+    
+    # Common DPI values for --dpi option
+    dpi_values="72 96 150 200 300 600 1200"
+    
+    case ${prev} in
+        --dpi|-d)
+            # Complete with common DPI values
+            mapfile -t COMPREPLY < <(compgen -W "${dpi_values}" -- "${cur}")
+            return 0
+            ;;
+        *)
+            ;;
+    esac
+    
+    # If current word starts with -, complete with options
+    if [[ ${cur} == -* ]]; then
+        mapfile -t COMPREPLY < <(compgen -W "${opts}" -- "${cur}")
+        return 0
+    fi
+    
+    # Determine what type of file we should complete based on position
+    local has_input=false
+    local i=1
+    
+    # Check if we already have an input file specified
+    while [[ $i -lt ${COMP_CWORD} ]]; do
+        local word="${COMP_WORDS[$i]}"
+        case ${word} in
+            --dpi|-d)
+                # Skip the next word (DPI value)
+                ((i++))
+                ;;
+            --help|--version|--verbose|-h|-v)
+                # These don't affect file completion
+                ;;
+            -*)
+                # Unknown option, skip
+                ;;
+            *)
+                # This should be a filename
+                if [[ ! ${has_input} ]]; then
+                    has_input=true
+                fi
+                ;;
+        esac
+        ((i++))
+    done
+    
+    if [[ ! ${has_input} ]]; then
+        # Complete with .agr files for input
+        local agr_files dir_files
+        mapfile -t agr_files < <(compgen -f -X '!*.agr' -- "${cur}")
+        mapfile -t dir_files < <(compgen -d -- "${cur}")
+        COMPREPLY=("${agr_files[@]}" "${dir_files[@]}")
+    else
+        # Complete with .pdf files or any filename for output
+        local pdf_files dir_files all_files
+        mapfile -t pdf_files < <(compgen -f -X '!*.pdf' -- "${cur}")
+        mapfile -t dir_files < <(compgen -d -- "${cur}")
+        COMPREPLY=("${pdf_files[@]}" "${dir_files[@]}")
+        # Also allow completing without extension
+        if [[ ${cur} != *.* ]]; then
+            mapfile -t all_files < <(compgen -f -- "${cur}")
+            COMPREPLY+=("${all_files[@]}")
+        fi
+    fi
+    
+    return 0
+}
+
+# Register the completion function
+complete -F _gracetopdf_completion gracetopdf
+complete -F _gracetopdf_completion xmgracetopdf
