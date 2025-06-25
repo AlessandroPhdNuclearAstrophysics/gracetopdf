@@ -41,7 +41,7 @@ EXAMPLES:
 
 DEPENDENCIES:
     - grace (xmgrace)
-    - ghostscript (for PDF conversion)
+    - epstopdf (texlive-font-utils package)
 
 EOF
 }
@@ -66,8 +66,8 @@ check_dependencies() {
         missing_deps+=("grace (xmgrace)")
     fi
     
-    if ! command -v ps2pdf >/dev/null 2>&1; then
-        missing_deps+=("ghostscript")
+    if ! command -v epstopdf >/dev/null 2>&1; then
+        missing_deps+=("epstopdf (texlive-font-utils)")
     fi
     
     if [ ${#missing_deps[@]} -gt 0 ]; then
@@ -83,24 +83,24 @@ check_dependencies() {
 convert_grace_to_pdf() {
     local input="$1"
     local output="$2"
-    local temp_ps="/tmp/gracetopdf_$$.ps"
+    local temp_eps="/tmp/gracetopdf_$$.eps"
     
-    log "Converting $input to PostScript..."
-    if ! gracebat -hdevice PostScript -printfile "$temp_ps" "$input" >/dev/null 2>&1; then
-        echo "Error: Failed to convert Grace file to PostScript" >&2
-        rm -f "$temp_ps"
+    log "Converting $input to EPS..."
+    if ! gracebat -hdevice EPS -printfile "$temp_eps" "$input" >/dev/null 2>&1; then
+        echo "Error: Failed to convert Grace file to EPS" >&2
+        rm -f "$temp_eps"
         exit 1
     fi
     
-    log "Converting PostScript to PDF..."
-    if ! ps2pdf -dPDFSETTINGS=/printer -r"$DPI" "$temp_ps" "$output" >/dev/null 2>&1; then
-        echo "Error: Failed to convert PostScript to PDF" >&2
-        rm -f "$temp_ps"
+    log "Converting EPS to PDF using epstopdf..."
+    if ! epstopdf --outfile="$output" "$temp_eps" >/dev/null 2>&1; then
+        echo "Error: Failed to convert EPS to PDF" >&2
+        rm -f "$temp_eps"
         exit 1
     fi
     
     # Clean up temporary file
-    rm -f "$temp_ps"
+    rm -f "$temp_eps"
     
     log "Conversion completed: $output"
 }

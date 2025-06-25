@@ -129,7 +129,7 @@ test-completion: check
 .PHONY: test_clean
 test_clean:
 	@echo "Cleaning up test artifacts..."
-	rm -f *.pdf *.ps
+	rm -f *.pdf *.ps *.eps
 	@echo "✓ Test artifacts cleaned up"
 
 # Check runtime dependencies
@@ -137,7 +137,7 @@ test_clean:
 check-deps:
 	@echo "Checking runtime dependencies..."
 	@command -v gracebat >/dev/null 2>&1 && echo "✓ grace (gracebat) is available" || echo "✗ grace (gracebat) not found - install xmgrace package"
-	@command -v ps2pdf >/dev/null 2>&1 && echo "✓ ghostscript (ps2pdf) is available" || echo "✗ ghostscript (ps2pdf) not found - install ghostscript package"
+	@command -v epstopdf >/dev/null 2>&1 && echo "✓ epstopdf is available" || echo "✗ epstopdf not found - install texlive-font-utils package"
 
 # Display installation help
 .PHONY: help

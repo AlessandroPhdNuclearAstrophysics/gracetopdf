@@ -16,9 +16,9 @@ Grace (xmgrace) is a WYSIWYG 2D plotting tool for the X Window System and M*tif.
 This utility provides a simple way to convert Grace files to PDF for publication
 or sharing purposes.
 
-The conversion process uses Grace's batch mode to generate PostScript output,
-which is then converted to PDF using Ghostscript. This ensures high-quality
-output suitable for professional documents.
+The conversion process uses Grace's batch mode to generate EPS output,
+which is then converted to PDF using epstopdf. This ensures high-quality
+output suitable for professional documents with correct orientation and proper page dimensions.
 .SH ARGUMENTS
 .TP
 .I INPUT_FILE
@@ -76,12 +76,13 @@ requires the following external programs to be installed:
 .B grace (xmgrace)
 The Grace plotting tool, specifically the \fBgracebat\fR command for batch processing.
 .TP
-.B ghostscript
-For converting PostScript to PDF format. The \fBps2pdf\fR command must be available.
+.B epstopdf
+For converting EPS to PDF format. The \fBepstopdf\fR command must be available
+(usually part of TeX Live distribution).
 .SH FILES
 .TP
-.I /tmp/gracetopdf_*.ps
-Temporary PostScript files created during conversion. These are automatically
+.I /tmp/gracetopdf_*.eps
+Temporary EPS files created during conversion. These are automatically
 cleaned up after successful conversion.
 .SH BUGS
 Report bugs to the project repository or maintainer.
@@ -96,7 +97,8 @@ There is NO WARRANTY, to the extent permitted by law.
 .BR grace (1),
 .BR xmgrace (1),
 .BR gracebat (1),
-.BR ps2pdf (1),
-.BR ghostscript (1)
+.BR epstopdf (1)
 
 Grace home page: <http://plasma-gate.weizmann.ac.il/Grace/>
+.br
+TeX Live: <https://www.tug.org/texlive/>

@@ -8,7 +8,7 @@ A command-line utility to convert Grace plot files (.agr) to PDF format.
 
 `gracetopdf` is a shell script that provides a simple and efficient way to convert Grace (xmgrace) plot files to PDF format. Grace is a WYSIWYG 2D plotting tool, and this utility makes it easy to convert your plots to PDF for publication, sharing, or archival purposes.
 
-The conversion process uses Grace's batch mode to generate high-quality PostScript output, which is then converted to PDF using Ghostscript, ensuring professional-quality results.
+The conversion process uses Grace's batch mode to generate high-quality EPS (Encapsulated PostScript) output, which is then converted to PDF using epstopdf, ensuring professional-quality results with correct orientation and proper page dimensions.
 
 ## Features
 
@@ -20,6 +20,7 @@ The conversion process uses Grace's batch mode to generate high-quality PostScri
 - Comprehensive error handling
 - Man page documentation
 - **Bash and Zsh autocompletion support** for commands, options, and files
+- **Correct orientation and page size handling** via EPS intermediate format and epstopdf
 
 ## Installation
 
@@ -39,16 +40,18 @@ Before installing `gracetopdf`, ensure you have the following dependencies:
   brew install grace
   ```
 
-- **Ghostscript** - For PostScript to PDF conversion
+- **epstopdf** - For EPS to PDF conversion (part of TeX Live)
   ```bash
   # Ubuntu/Debian
-  sudo apt-get install ghostscript
+  sudo apt-get install texlive-font-utils
   
   # CentOS/RHEL/Fedora
-  sudo yum install ghostscript  # or dnf install ghostscript
+  sudo yum install texlive-epstopdf  # or dnf install texlive-epstopdf
   
   # macOS (with Homebrew)
-  brew install ghostscript
+  brew install --cask mactex
+  # or for minimal installation:
+  brew install texlive
   ```
 
 ### Installation Methods
@@ -278,9 +281,9 @@ sudo make uninstall
    - Install the Grace package for your system
    - Check that `gracebat` is in your PATH
 
-2. **"ps2pdf: command not found"**
-   - Install Ghostscript for your system
-   - Check that `ps2pdf` is in your PATH
+2. **"epstopdf: command not found"**
+   - Install TeX Live font utilities for your system
+   - Check that `epstopdf` is in your PATH
 
 3. **Permission denied**
    - Ensure the script has execute permissions: `chmod +x gracetopdf`
@@ -289,6 +292,14 @@ sudo make uninstall
 4. **"Input file does not exist"**
    - Check the file path and ensure the Grace file exists
    - Verify you have read permissions for the file
+
+5. **Output PDF has wrong orientation or rotation**
+   - This issue has been resolved by using EPS as intermediate format with epstopdf
+   - The script automatically uses the optimal conversion path via EPS→PDF
+
+6. **Output PDF appears cropped or has wrong page size**
+   - Now resolved by using epstopdf which properly handles EPS bounding boxes
+   - epstopdf automatically determines the correct page size from EPS
 
 ### Getting Help
 
@@ -311,5 +322,5 @@ Created by Alessandro Grassi.
 ## See Also
 
 - [Grace Official Website](http://plasma-gate.weizmann.ac.il/Grace/)
-- [Ghostscript Documentation](https://www.ghostscript.com/doc/9.54.0/Use.htm)
-- `man grace`, `man gracebat`, `man ps2pdf`
+- [TeX Live Documentation](https://www.tug.org/texlive/)
+- `man grace`, `man gracebat`, `man epstopdf`
