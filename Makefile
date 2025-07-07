@@ -96,7 +96,9 @@ install-user: check
 	@echo "Make sure $(HOME)/.local/bin is in your PATH."
 	@echo "You can add it by running: echo 'export PATH=\"\$$HOME/.local/bin:\$$PATH\"' >> ~/.bashrc"
 	@echo "To enable bash completion, add this to your ~/.bashrc:"
-	@echo "  source $(HOME)/.local/share/bash-completion/completions/$(SCRIPT)"
+	@echo "  if [ -f ~/.local/share/bash-completion/completions/$(SCRIPT) ]; then"
+	@echo "      source ~/.local/share/bash-completion/completions/$(SCRIPT)"
+	@echo "  fi"
 	@echo "For zsh completion, add $(HOME)/.local/share/zsh/site-functions to your fpath in ~/.zshrc"
 
 # Uninstall from user's home directory
